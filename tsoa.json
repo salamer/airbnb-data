@@ -1,0 +1,30 @@
+{
+  "entryFile": "src/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/*.controller.ts"],
+  "spec": {
+    "outputDirectory": ".",
+    "specFile": "swagger.json",
+    "specVersion": 3,
+    "securityDefinitions": {
+      "jwt": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "basePath": "/api/v1",
+    "name": "Instagram Simplified API",
+    "version": "1.0.0",
+    "description": "API docs for simplified Instagram backend",
+    "contact": {
+        "name": "Your Name"
+    }
+  },
+  "routes": {
+    "routesDir": "src/generated",
+    "basePath": "/api/v1",
+    "authenticationModule": "./src/auth.middleware.ts",
+    "middleware": "express"
+  }
+}

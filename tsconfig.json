@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Your target JavaScript version
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "strictPropertyInitialization": false, // Added to avoid strict property initialization errors
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "lib": [ // Added/Updated lib section
+      "ES2020", // Match your target, or newer
+      "ES2021.Promise", // Specifically for Promise.any
+      "DOM" // Include DOM types if your code or dependencies need them (common)
+    ]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "drizzle_migrations"]
+}
