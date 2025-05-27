@@ -154,9 +154,9 @@ export class HouseController extends Controller {
     @Query() query: string,
     @Query() limit: number = 10,
     @Query() offset: number = 0,
-    @Query() state: string | undefined = undefined,
-    @Query() city: string | undefined = undefined,
-    @Query() zipCode: string | undefined = undefined,
+    @Query() state: string = "",
+    @Query() city: string = "",
+    @Query() zipCode: string = "",
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>
   ): Promise<HouseResponse[]> {
     if (!query.trim()) {
@@ -173,15 +173,19 @@ export class HouseController extends Controller {
         query: searchTerm,
       });
 
-    if (state) {
-      searchHandle = searchHandle.andWhere("post.state = :state", { state });
+    if (state.trim()) {
+      searchHandle = searchHandle.andWhere("post.state = :state", {
+        state: state.trim(),
+      });
     }
-    if (city) {
-      searchHandle = searchHandle.andWhere("post.city = :city", { city });
+    if (city.trim()) {
+      searchHandle = searchHandle.andWhere("post.city = :city", {
+        city: city.trim(),
+      });
     }
-    if (zipCode) {
+    if (zipCode.trim()) {
       searchHandle = searchHandle.andWhere("post.zipCode = :zipCode", {
-        zipCode,
+        zipCode: zipCode.trim(),
       });
     }
 
