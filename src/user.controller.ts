@@ -24,7 +24,7 @@ interface UserProfileResponse {
   createdAt: Date;
 }
 
-interface UserOrdersResponse  extends HouseResponse {
+interface UserOrdersResponse extends HouseResponse {
   userId: number;
   startDate?: Date;
   endDate?: Date;
@@ -76,25 +76,27 @@ export class UserController extends Controller {
       return notFound(404, { message: "No orders found for this user." });
     }
 
-    return orders.map((order) => ({
-      id: order.id,
-      price: order.house.price,
-      userId: order.userId,
-      houseId: order.houseId,
-      username: order.user?.username || "unknown",
-      avatarUrl: order.user?.avatarUrl || null,
-      createdAt: order.createdAt,
-      imageUrl: order.house.imageUrl,
-      address: order.house.address,
-      city: order.house.city,
-      state: order.house.state,
-      zipCode: order.house.zipCode,
-      caption: order.house.caption,
-      size: order.house.size,
-      startDate: order.startDate,
-      endDate: order.endDate,
-      totalPrice: order.totalPrice,
-    }));
+    return orders
+      .filter((order) => order.house !== null)
+      .map((order) => ({
+        id: order.id,
+        price: order.house.price,
+        userId: order.userId,
+        houseId: order.houseId,
+        username: order.user?.username || "unknown",
+        avatarUrl: order.user?.avatarUrl || null,
+        createdAt: order.createdAt,
+        imageUrl: order.house.imageUrl,
+        address: order.house.address,
+        city: order.house.city,
+        state: order.house.state,
+        zipCode: order.house.zipCode,
+        caption: order.house.caption,
+        size: order.house.size,
+        startDate: order.startDate,
+        endDate: order.endDate,
+        totalPrice: order.totalPrice,
+      }));
   }
 
   @Get("{userId}/likes")
