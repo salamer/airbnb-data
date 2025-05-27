@@ -623,6 +623,7 @@
 						"name": "state",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					},
@@ -631,6 +632,7 @@
 						"name": "city",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					},
@@ -639,6 +641,7 @@
 						"name": "zipCode",
 						"required": false,
 						"schema": {
+							"default": "",
 							"type": "string"
 						}
 					}

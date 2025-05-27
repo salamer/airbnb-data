@@ -113,7 +113,8 @@ export class UserController extends Controller {
 
     const posts = await AppDataSource.getRepository(Like).find({
       where: { userId },
-      relations: ["user"],
+      relations: ["user", "house"],
+      order: { createdAt: "DESC" },
     });
 
     if (posts.length === 0) {

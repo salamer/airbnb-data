@@ -248,9 +248,9 @@ export function RegisterRoutes(app: Router) {
                 query: {"in":"query","name":"query","required":true,"dataType":"string"},
                 limit: {"default":10,"in":"query","name":"limit","dataType":"double"},
                 offset: {"default":0,"in":"query","name":"offset","dataType":"double"},
-                state: {"in":"query","name":"state","dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"undefined"}]},
-                city: {"in":"query","name":"city","dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"undefined"}]},
-                zipCode: {"in":"query","name":"zipCode","dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"undefined"}]},
+                state: {"default":"","in":"query","name":"state","dataType":"string"},
+                city: {"default":"","in":"query","name":"city","dataType":"string"},
+                zipCode: {"default":"","in":"query","name":"zipCode","dataType":"string"},
                 badRequestResponse: {"in":"res","name":"400","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
         };
         app.get('/api/v1/houses/search',
