@@ -1,7 +1,7 @@
 import {
   Body,
   Get,
-  Post as HttpPost,
+  Post,
   Route,
   Tags,
   Security,
@@ -50,7 +50,7 @@ export interface HouseResponse {
 @Tags("Houses")
 export class HouseController extends Controller {
   @Security("jwt")
-  @HttpPost("")
+  @Post("")
   @SuccessResponse(200, "Post Created")
   public async createHouse(
     @Request() req: Express.Request,
@@ -169,7 +169,7 @@ export class HouseController extends Controller {
     let searchHandle = AppDataSource.getRepository(House)
       .createQueryBuilder("post")
       .leftJoinAndSelect("post.user", "user")
-      .where("to_tsvector(post.caption) @@ plainto_tsquery(:query)", {
+      .where("to_tsvector(post.address) @@ plainto_tsquery(:query)", {
         query: searchTerm,
       });
 

@@ -1,5 +1,4 @@
 import {
-  Post as HttpPost,
   Delete,
   Route,
   Tags,
@@ -13,6 +12,7 @@ import {
   SuccessResponse,
   Get,
   Query,
+  Post,
 } from "tsoa";
 import { AppDataSource, Like, Order, House, User } from "./models";
 import type { JwtPayload } from "./utils";
@@ -27,6 +27,13 @@ export interface OrderResponse {
   username: string;
   avatarUrl: string | null;
   createdAt: Date;
+  houseImageUrl: string;
+  houseCaption: string;
+  houseCity: string;
+  houseState: string;
+  houseAddress: string;
+  houseZipCode: string;
+  houseSize: string;
 }
 
 export interface CreateOrderInput {
@@ -39,7 +46,7 @@ export interface CreateOrderInput {
 export class InteractionController extends Controller {
   @Security("jwt")
   @SuccessResponse(201, "Liked")
-  @HttpPost("like")
+  @Post("like")
   public async likeHouse(
     @Request() req: Express.Request,
     @Path() houseId: number,
@@ -82,7 +89,7 @@ export class InteractionController extends Controller {
 
   @Security("jwt")
   @SuccessResponse(201, "Order Created")
-  @HttpPost("orders")
+  @Post("orders")
   public async createOrder(
     @Request() req: Express.Request,
     @Path() houseId: number,
@@ -110,9 +117,11 @@ export class InteractionController extends Controller {
       throw new Error("Start date must be in the future.");
     }
 
-    const totalPrice = house.price * Math.ceil(
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const totalPrice =
+      house.price *
+      Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
 
     const order = Order.create({
       userId: user.id,
@@ -136,6 +145,13 @@ export class InteractionController extends Controller {
       username: user.username,
       avatarUrl: user.avatarUrl,
       createdAt: saved.createdAt,
+      houseImageUrl: house.imageUrl,
+      houseCaption: house.caption || "",
+      houseCity: house.city,
+      houseState: house.state,
+      houseAddress: house.address,
+      houseZipCode: house.zipCode,
+      houseSize: house.size,
     };
   }
 
@@ -155,8 +171,9 @@ export class InteractionController extends Controller {
       where: { houseId },
       relations: ["user"],
       order: { createdAt: "DESC" },
-      take: limit,
-      skip: offset,
+      // Ensure that the limit and offset are valid numbers
+      take: limit > 0 ? limit : 10,
+      skip: offset >= 0 ? offset : 0,
     });
 
     return orders.map((order) => ({
@@ -169,6 +186,13 @@ export class InteractionController extends Controller {
       username: order.user?.username || "unknown",
       avatarUrl: order.user?.avatarUrl || null,
       createdAt: order.createdAt,
+      houseImageUrl: house.imageUrl,
+      houseCaption: house.caption || "",
+      houseCity: house.city,
+      houseState: house.state,
+      houseAddress: house.address,
+      houseZipCode: house.zipCode,
+      houseSize: house.size || "",
     }));
   }
 }

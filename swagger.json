@@ -73,6 +73,50 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreateHouseBase64Input": {
+				"properties": {
+					"imageBase64": {
+						"type": "string"
+					},
+					"imageFileType": {
+						"type": "string"
+					},
+					"caption": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"address": {
+						"type": "string"
+					},
+					"state": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"imageBase64",
+					"imageFileType",
+					"price",
+					"address",
+					"state",
+					"city",
+					"zipCode",
+					"size"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserProfileResponse": {
 				"properties": {
 					"id": {
@@ -219,6 +263,27 @@
 					"createdAt": {
 						"type": "string",
 						"format": "date-time"
+					},
+					"houseImageUrl": {
+						"type": "string"
+					},
+					"houseCaption": {
+						"type": "string"
+					},
+					"houseCity": {
+						"type": "string"
+					},
+					"houseState": {
+						"type": "string"
+					},
+					"houseAddress": {
+						"type": "string"
+					},
+					"houseZipCode": {
+						"type": "string"
+					},
+					"houseSize": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -227,7 +292,32 @@
 					"houseId",
 					"username",
 					"avatarUrl",
-					"createdAt"
+					"createdAt",
+					"houseImageUrl",
+					"houseCaption",
+					"houseCity",
+					"houseState",
+					"houseAddress",
+					"houseZipCode",
+					"houseSize"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateOrderInput": {
+				"properties": {
+					"startDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"endDate": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"startDate",
+					"endDate"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -344,6 +434,76 @@
 	},
 	"paths": {
 		"/houses": {
+			"post": {
+				"operationId": "CreateHouse",
+				"responses": {
+					"200": {
+						"description": "Post Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HouseResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Houses"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateHouseBase64Input"
+							}
+						}
+					}
+				}
+			},
 			"get": {
 				"operationId": "GetFeedHouses",
 				"responses": {
@@ -691,6 +851,68 @@
 				]
 			}
 		},
+		"/houses/{houseId}/like": {
+			"post": {
+				"operationId": "LikeHouse",
+				"responses": {
+					"201": {
+						"description": "Liked",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Interactions (Likes & Orders)"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "houseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/houses/{houseId}/unlike": {
 			"delete": {
 				"operationId": "UnlikeHouse",
@@ -736,6 +958,68 @@
 			}
 		},
 		"/houses/{houseId}/orders": {
+			"post": {
+				"operationId": "CreateOrder",
+				"responses": {
+					"201": {
+						"description": "Order Created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OrderResponse"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Interactions (Likes & Orders)"
+				],
+				"security": [
+					{
+						"jwt": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "houseId",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateOrderInput"
+							}
+						}
+					}
+				}
+			},
 			"get": {
 				"operationId": "GetOrders",
 				"responses": {

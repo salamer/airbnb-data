@@ -41,6 +41,22 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateHouseBase64Input": {
+        "dataType": "refObject",
+        "properties": {
+            "imageBase64": {"dataType":"string","required":true},
+            "imageFileType": {"dataType":"string","required":true},
+            "caption": {"dataType":"string"},
+            "price": {"dataType":"double","required":true},
+            "address": {"dataType":"string","required":true},
+            "state": {"dataType":"string","required":true},
+            "city": {"dataType":"string","required":true},
+            "zipCode": {"dataType":"string","required":true},
+            "size": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserProfileResponse": {
         "dataType": "refObject",
         "properties": {
@@ -88,6 +104,22 @@ const models: TsoaRoute.Models = {
             "username": {"dataType":"string","required":true},
             "avatarUrl": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "createdAt": {"dataType":"datetime","required":true},
+            "houseImageUrl": {"dataType":"string","required":true},
+            "houseCaption": {"dataType":"string","required":true},
+            "houseCity": {"dataType":"string","required":true},
+            "houseState": {"dataType":"string","required":true},
+            "houseAddress": {"dataType":"string","required":true},
+            "houseZipCode": {"dataType":"string","required":true},
+            "houseSize": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateOrderInput": {
+        "dataType": "refObject",
+        "properties": {
+            "startDate": {"dataType":"datetime","required":true},
+            "endDate": {"dataType":"datetime","required":true},
         },
         "additionalProperties": false,
     },
@@ -147,6 +179,40 @@ export function RegisterRoutes(app: Router) {
 
 
     
+        const argsHouseController_createHouse: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                body: {"in":"body","name":"body","required":true,"ref":"CreateHouseBase64Input"},
+                badRequestResponse: {"in":"res","name":"400","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
+                serverErrorResponse: {"in":"res","name":"500","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
+        };
+        app.post('/api/v1/houses',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(HouseController)),
+            ...(fetchMiddlewares<RequestHandler>(HouseController.prototype.createHouse)),
+
+            async function HouseController_createHouse(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsHouseController_createHouse, request, response });
+
+                const controller = new HouseController();
+
+              await templateService.apiHandler({
+                methodName: 'createHouse',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsHouseController_getFeedHouses: Record<string, TsoaRoute.ParameterSchema> = {
                 limit: {"default":10,"in":"query","name":"limit","dataType":"double"},
                 offset: {"default":0,"in":"query","name":"offset","dataType":"double"},
@@ -338,6 +404,39 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsInteractionController_likeHouse: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                houseId: {"in":"path","name":"houseId","required":true,"dataType":"double"},
+                notFoundResponse: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
+        };
+        app.post('/api/v1/houses/:houseId/like',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(InteractionController)),
+            ...(fetchMiddlewares<RequestHandler>(InteractionController.prototype.likeHouse)),
+
+            async function InteractionController_likeHouse(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsInteractionController_likeHouse, request, response });
+
+                const controller = new InteractionController();
+
+              await templateService.apiHandler({
+                methodName: 'likeHouse',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsInteractionController_unlikeHouse: Record<string, TsoaRoute.ParameterSchema> = {
                 req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 houseId: {"in":"path","name":"houseId","required":true,"dataType":"double"},
@@ -364,6 +463,40 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsInteractionController_createOrder: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                houseId: {"in":"path","name":"houseId","required":true,"dataType":"double"},
+                body: {"in":"body","name":"body","required":true,"ref":"CreateOrderInput"},
+                notFoundResponse: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
+        };
+        app.post('/api/v1/houses/:houseId/orders',
+            authenticateMiddleware([{"jwt":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(InteractionController)),
+            ...(fetchMiddlewares<RequestHandler>(InteractionController.prototype.createOrder)),
+
+            async function InteractionController_createOrder(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsInteractionController_createOrder, request, response });
+
+                const controller = new InteractionController();
+
+              await templateService.apiHandler({
+                methodName: 'createOrder',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
               });
             } catch (err) {
                 return next(err);
