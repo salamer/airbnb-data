@@ -13,10 +13,11 @@ import {
   TsoaResponse,
   SuccessResponse,
 } from "tsoa";
-import { AppDataSource } from "./models";
+import { AppDataSource, Order, Like } from "./models";
 import { House, User } from "./models";
 import { uploadBase64ToObjectStorage } from "./objectstorage.service";
 import type { JwtPayload } from "./utils";
+import { In } from "typeorm";
 
 export interface CreateHouseBase64Input {
   imageBase64: string;
@@ -44,6 +45,8 @@ export interface HouseResponse {
   userId: number;
   username: string;
   avatarUrl: string | null;
+  hasLiked: boolean;
+  hasOrdered: boolean;
 }
 
 @Route("houses")
@@ -111,6 +114,8 @@ export class HouseController extends Controller {
         userId: savedPost.userId,
         username: user?.username || "unknown",
         avatarUrl: user?.avatarUrl || null,
+        hasLiked: false, // Default to false, will be updated in feed
+        hasOrdered: false, // Default to false, will be updated in feed
       };
     } catch (error: any) {
       console.error("Post creation failed:", error);
@@ -120,17 +125,39 @@ export class HouseController extends Controller {
     }
   }
 
+  @Security("jwt", ["optional"])
   @Get("")
   public async getFeedHouses(
+    @Request() req: Express.Request,
     @Query() limit: number = 10,
     @Query() offset: number = 0
   ): Promise<HouseResponse[]> {
+    const currentUser = req.user as JwtPayload;
     const houses = await AppDataSource.getRepository(House).find({
       relations: ["user"],
       order: { createdAt: "DESC" },
       take: limit,
       skip: offset,
     });
+
+    const likes =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Like).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(houses.map((house) => house.id)),
+            },
+          })
+        : [];
+    const orders =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Order).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(houses.map((house) => house.id)),
+            },
+          })
+        : [];
 
     return houses.map((house) => ({
       id: house.id,
@@ -146,11 +173,15 @@ export class HouseController extends Controller {
       userId: house.userId,
       username: house.user?.username || "unknown",
       avatarUrl: house.user?.avatarUrl || null,
+      hasLiked: likes.some((like) => like.houseId === house.id),
+      hasOrdered: orders.some((order) => order.houseId === house.id),
     }));
   }
 
+  @Security("jwt", ["optional"])
   @Get("search")
   public async searchHouses(
+    @Request() req: Express.Request,
     @Query() query: string,
     @Query() limit: number = 10,
     @Query() offset: number = 0,
@@ -159,6 +190,7 @@ export class HouseController extends Controller {
     @Query() zipCode: string = "",
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>
   ): Promise<HouseResponse[]> {
+    const currentUser = req.user as JwtPayload;
     if (!query.trim()) {
       return badRequestResponse(400, {
         message: "Search query cannot be empty",
@@ -189,32 +221,55 @@ export class HouseController extends Controller {
       });
     }
 
-    const posts = await searchHandle
+    const houses = await searchHandle
       .orderBy("post.createdAt", "DESC")
       .take(limit)
       .skip(offset)
       .getMany();
 
-    return posts.map((post) => ({
-      id: post.id,
-      imageUrl: post.imageUrl,
-      caption: post.caption,
-      price: post.price,
-      address: post.address,
-      state: post.state,
-      city: post.city,
-      zipCode: post.zipCode,
-      size: post.size,
-      createdAt: post.createdAt,
-      userId: post.userId,
-      username: post.user?.username || "unknown",
-      avatarUrl: post.user?.avatarUrl || null,
+    const likes =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Like).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(houses.map((house) => house.id)),
+            },
+          })
+        : [];
+    const orders =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Order).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(houses.map((house) => house.id)),
+            },
+          })
+        : [];
+
+    return houses.map((house) => ({
+      id: house.id,
+      imageUrl: house.imageUrl,
+      caption: house.caption,
+      price: house.price,
+      address: house.address,
+      state: house.state,
+      city: house.city,
+      zipCode: house.zipCode,
+      size: house.size,
+      createdAt: house.createdAt,
+      userId: house.userId,
+      username: house.user?.username || "unknown",
+      avatarUrl: house.user?.avatarUrl || null,
+      hasLiked: likes.some((like) => like.houseId === house.id),
+      hasOrdered: orders.some((order) => order.houseId === house.id),
     }));
   }
 
+  @Security("jwt", ["optional"])
   @Get("{houseId}")
   public async getHouseById(
     @Path() houseId: number,
+    @Request() req: Express.Request,
     @Res() notFoundResponse: TsoaResponse<404, { message: string }>
   ): Promise<HouseResponse> {
     const post = await AppDataSource.getRepository(House).findOne({
@@ -225,6 +280,26 @@ export class HouseController extends Controller {
     if (!post) {
       return notFoundResponse(404, { message: "Post not found" });
     }
+
+    const currentUser = req.user as JwtPayload;
+    const likes =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Like).findOne({
+            where: {
+              userId: currentUser.userId,
+              houseId: post.id,
+            },
+          })
+        : null;
+    const orders =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Order).findOne({
+            where: {
+              userId: currentUser.userId,
+              houseId: post.id,
+            },
+          })
+        : null;
 
     return {
       id: post.id,
@@ -240,6 +315,8 @@ export class HouseController extends Controller {
       userId: post.userId,
       username: post.user?.username || "unknown",
       avatarUrl: post.user?.avatarUrl || null,
+      hasLiked: !!likes,
+      hasOrdered: !!orders,
     };
   }
 }

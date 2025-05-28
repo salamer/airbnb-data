@@ -15,6 +15,7 @@ import {
 import { AppDataSource, User, Order, House, Like } from "./models";
 import type { JwtPayload } from "./utils";
 import { HouseResponse } from "./house.controller";
+import { In } from "typeorm";
 
 interface UserProfileResponse {
   id: number;
@@ -55,9 +56,11 @@ export class UserController extends Controller {
     };
   }
 
+  @Security("jwt", ["optional"])
   @Get("{userId}/orders")
   public async getUserOrders(
     @Path() userId: number,
+    @Request() req: Express.Request,
     @Res() notFound: TsoaResponse<404, { message: string }>
   ): Promise<UserOrdersResponse[]> {
     const user = await AppDataSource.getRepository(User).findOneBy({
@@ -72,9 +75,27 @@ export class UserController extends Controller {
       relations: ["house", "user"],
     });
 
-    if (orders.length === 0) {
-      return notFound(404, { message: "No orders found for this user." });
-    }
+    const currentUser = req.user as JwtPayload;
+    const likes =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Like).find({
+            where: [
+              {
+                userId: currentUser.userId,
+                houseId: In(orders.map((o) => o.houseId)),
+              },
+            ],
+          })
+        : [];
+    const has_orders =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Order).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(orders.map((o) => o.houseId)),
+            },
+          })
+        : [];
 
     return orders
       .filter((order) => order.house !== null)
@@ -96,11 +117,15 @@ export class UserController extends Controller {
         startDate: order.startDate,
         endDate: order.endDate,
         totalPrice: order.totalPrice,
+        hasLiked: likes.some((like) => like.houseId === order.houseId),
+        hasOrdered: has_orders.some((order) => order.houseId === order.houseId),
       }));
   }
 
+  @Security("jwt", ["optional"])
   @Get("{userId}/likes")
   public async getUserLikes(
+    @Request() req: Express.Request,
     @Path() userId: number,
     @Res() notFound: TsoaResponse<404, { message: string }>
   ): Promise<HouseResponse[]> {
@@ -117,9 +142,27 @@ export class UserController extends Controller {
       order: { createdAt: "DESC" },
     });
 
-    if (posts.length === 0) {
-      return notFound(404, { message: "No liked posts found for this user." });
-    }
+    const currentUser = req.user as JwtPayload;
+    const likes =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Like).find({
+            where: [
+              {
+                userId: currentUser.userId,
+                houseId: In(posts.map((o) => o.houseId)),
+              },
+            ],
+          })
+        : [];
+    const has_orders =
+      currentUser && currentUser.userId
+        ? await AppDataSource.getRepository(Order).find({
+            where: {
+              userId: currentUser.userId,
+              houseId: In(posts.map((o) => o.houseId)),
+            },
+          })
+        : [];
 
     return posts.map((post) => ({
       id: post.id,
@@ -135,6 +178,8 @@ export class UserController extends Controller {
       userId: post.userId,
       username: post.user?.username || "unknown",
       avatarUrl: post.user?.avatarUrl || null,
+      hasLiked: likes.some((like) => like.houseId === post.houseId),
+      hasOrdered: has_orders.some((order) => order.houseId === post.houseId),
     }));
   }
 }

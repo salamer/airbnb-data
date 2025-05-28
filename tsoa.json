@@ -14,9 +14,9 @@
       }
     },
     "basePath": "/api/v1",
-    "name": "Instagram Simplified API",
+    "name": "Airbnb Simplified API",
     "version": "1.0.0",
-    "description": "API docs for simplified Instagram backend",
+    "description": "API docs for simplified Airbnb backend",
     "contact": {
         "name": "Your Name"
     }

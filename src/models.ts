@@ -7,6 +7,7 @@ import {
   DataSourceOptions,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
 } from "typeorm";
 import config from "./config";
 

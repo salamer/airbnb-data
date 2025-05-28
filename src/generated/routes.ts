@@ -37,6 +37,8 @@ const models: TsoaRoute.Models = {
             "userId": {"dataType":"double","required":true},
             "username": {"dataType":"string","required":true},
             "avatarUrl": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "hasLiked": {"dataType":"boolean","required":true},
+            "hasOrdered": {"dataType":"boolean","required":true},
         },
         "additionalProperties": false,
     },
@@ -85,6 +87,8 @@ const models: TsoaRoute.Models = {
             "userId": {"dataType":"double","required":true},
             "username": {"dataType":"string","required":true},
             "avatarUrl": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
+            "hasLiked": {"dataType":"boolean","required":true},
+            "hasOrdered": {"dataType":"boolean","required":true},
             "startDate": {"dataType":"datetime"},
             "endDate": {"dataType":"datetime"},
             "totalPrice": {"dataType":"double"},
@@ -214,10 +218,12 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsHouseController_getFeedHouses: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 limit: {"default":10,"in":"query","name":"limit","dataType":"double"},
                 offset: {"default":0,"in":"query","name":"offset","dataType":"double"},
         };
         app.get('/api/v1/houses',
+            authenticateMiddleware([{"jwt":["optional"]}]),
             ...(fetchMiddlewares<RequestHandler>(HouseController)),
             ...(fetchMiddlewares<RequestHandler>(HouseController.prototype.getFeedHouses)),
 
@@ -245,6 +251,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsHouseController_searchHouses: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 query: {"in":"query","name":"query","required":true,"dataType":"string"},
                 limit: {"default":10,"in":"query","name":"limit","dataType":"double"},
                 offset: {"default":0,"in":"query","name":"offset","dataType":"double"},
@@ -254,6 +261,7 @@ export function RegisterRoutes(app: Router) {
                 badRequestResponse: {"in":"res","name":"400","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
         };
         app.get('/api/v1/houses/search',
+            authenticateMiddleware([{"jwt":["optional"]}]),
             ...(fetchMiddlewares<RequestHandler>(HouseController)),
             ...(fetchMiddlewares<RequestHandler>(HouseController.prototype.searchHouses)),
 
@@ -282,9 +290,11 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsHouseController_getHouseById: Record<string, TsoaRoute.ParameterSchema> = {
                 houseId: {"in":"path","name":"houseId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 notFoundResponse: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
         };
         app.get('/api/v1/houses/:houseId',
+            authenticateMiddleware([{"jwt":["optional"]}]),
             ...(fetchMiddlewares<RequestHandler>(HouseController)),
             ...(fetchMiddlewares<RequestHandler>(HouseController.prototype.getHouseById)),
 
@@ -344,9 +354,11 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsUserController_getUserOrders: Record<string, TsoaRoute.ParameterSchema> = {
                 userId: {"in":"path","name":"userId","required":true,"dataType":"double"},
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 notFound: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
         };
         app.get('/api/v1/users/:userId/orders',
+            authenticateMiddleware([{"jwt":["optional"]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getUserOrders)),
 
@@ -374,10 +386,12 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsUserController_getUserLikes: Record<string, TsoaRoute.ParameterSchema> = {
+                req: {"in":"request","name":"req","required":true,"dataType":"object"},
                 userId: {"in":"path","name":"userId","required":true,"dataType":"double"},
                 notFound: {"in":"res","name":"404","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"message":{"dataType":"string","required":true}}},
         };
         app.get('/api/v1/users/:userId/likes',
+            authenticateMiddleware([{"jwt":["optional"]}]),
             ...(fetchMiddlewares<RequestHandler>(UserController)),
             ...(fetchMiddlewares<RequestHandler>(UserController.prototype.getUserLikes)),
 

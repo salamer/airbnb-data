@@ -53,6 +53,12 @@
 					"avatarUrl": {
 						"type": "string",
 						"nullable": true
+					},
+					"hasLiked": {
+						"type": "boolean"
+					},
+					"hasOrdered": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -68,7 +74,9 @@
 					"createdAt",
 					"userId",
 					"username",
-					"avatarUrl"
+					"avatarUrl",
+					"hasLiked",
+					"hasOrdered"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -196,6 +204,12 @@
 						"type": "string",
 						"nullable": true
 					},
+					"hasLiked": {
+						"type": "boolean"
+					},
+					"hasOrdered": {
+						"type": "boolean"
+					},
 					"startDate": {
 						"type": "string",
 						"format": "date-time"
@@ -222,7 +236,9 @@
 					"createdAt",
 					"userId",
 					"username",
-					"avatarUrl"
+					"avatarUrl",
+					"hasLiked",
+					"hasOrdered"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -422,9 +438,9 @@
 		}
 	},
 	"info": {
-		"title": "Instagram Simplified API",
+		"title": "Airbnb Simplified API",
 		"version": "1.0.0",
-		"description": "API docs for simplified Instagram backend",
+		"description": "API docs for simplified Airbnb backend",
 		"license": {
 			"name": "ISC"
 		},
@@ -524,7 +540,13 @@
 				"tags": [
 					"Houses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"optional"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -588,7 +610,13 @@
 				"tags": [
 					"Houses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"optional"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -684,7 +712,13 @@
 				"tags": [
 					"Houses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"optional"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -787,7 +821,13 @@
 				"tags": [
 					"Users & Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"optional"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -840,7 +880,13 @@
 				"tags": [
 					"Users & Orders"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"optional"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
