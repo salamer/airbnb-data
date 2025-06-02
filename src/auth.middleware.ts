@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken, JwtPayload } from "./utils";
+import config from "./config";
 
 // Extend Express Request type
 declare global {
@@ -16,35 +17,57 @@ export async function expressAuthentication(
   securityName: string,
   _scopes?: string[]
 ): Promise<JwtPayload> {
-  if (securityName !== "jwt") {
-    throw new Error(`Unsupported security scheme: ${securityName}`);
-  }
+  // if (securityName !== 'jwt') {
+  //   throw new Error(`Unsupported security scheme: ${securityName}`);
+  // }
 
-  const authHeader = request.headers.authorization;
-  if (
-    !authHeader?.startsWith("Bearer ") &&
-    !_scopes?.find((scope) => scope === "optional")
-  ) {
-    throw new Error("Unauthorized: Missing or malformed token");
-  }
+  // const authHeader = request.headers.authorization;
+  // if (
+  //   !authHeader?.startsWith('Bearer ') &&
+  //   !_scopes?.find((scope) => scope === 'optional')
+  // ) {
+  //   throw new Error('Unauthorized: Missing or malformed token');
+  // }
 
-  if (!authHeader) {
+  // if (!authHeader) {
+  //   return {
+  //     userId: 0,
+  //     username: '',
+  //   };
+  // }
+
+  // const token = authHeader.split(' ')[1];
+  // const decoded = await verifyToken(token);
+
+  // if (!decoded) {
+  //   throw new Error('Unauthorized: Invalid token');
+  // }
+
+  // request.user = decoded;
+  if (!config.USE_ADMIN_USER) {
     return {
-      userId: 0,
-      username: "",
+      userId: config.GUEST_USER_ID,
+      username: config.GUEST_USERNAME,
     };
   }
-
-  const token = authHeader.split(" ")[1];
-  const decoded = await verifyToken(token);
-
-  if (!decoded) {
-    throw new Error("Unauthorized: Invalid token");
-  }
-
-  request.user = decoded;
-  return decoded;
+  return {
+    userId: config.ADMIN_USER_ID,
+    username: config.ADMIN_USERNAME,
+  };
 }
+
+export const getCurrentUser = () => {
+  if (!config.USE_ADMIN_USER) {
+    return {
+      userId: config.GUEST_USER_ID,
+      username: config.GUEST_USERNAME,
+    };
+  }
+  return {
+    userId: config.ADMIN_USER_ID,
+    username: config.ADMIN_USERNAME,
+  };
+};
 
 // use for standard middleware
 export const authMiddleware = async (
@@ -53,15 +76,15 @@ export const authMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: No token provided" });
-    }
+    // const authHeader = req.headers.authorization;
+    // if (!authHeader?.startsWith('Bearer ')) {
+    //   return res
+    //     .status(401)
+    //     .json({ message: 'Unauthorized: No token provided' });
+    // }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = await verifyToken(token);
+    // const token = authHeader.split(' ')[1];
+    const decoded = await verifyToken("");
 
     if (!decoded) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });

@@ -18,6 +18,7 @@ import { House, User } from "./models";
 import { uploadBase64ToObjectStorage } from "./objectstorage.service";
 import type { JwtPayload } from "./utils";
 import { In } from "typeorm";
+import { getCurrentUser } from "./auth.middleware";
 
 export interface CreateHouseBase64Input {
   imageBase64: string;
@@ -52,7 +53,7 @@ export interface HouseResponse {
 @Route("houses")
 @Tags("Houses")
 export class HouseController extends Controller {
-  @Security("jwt")
+  // @Security("jwt")
   @Post("")
   @SuccessResponse(200, "Post Created")
   public async createHouse(
@@ -61,7 +62,8 @@ export class HouseController extends Controller {
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>,
     @Res() serverErrorResponse: TsoaResponse<500, { message: string }>
   ): Promise<HouseResponse> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
 
     if (!body.imageBase64 || !body.imageFileType.startsWith("image/")) {
       return badRequestResponse(400, {
@@ -125,14 +127,15 @@ export class HouseController extends Controller {
     }
   }
 
-  @Security("jwt", ["optional"])
+  // @Security("jwt", ["optional"])
   @Get("")
   public async getFeedHouses(
     @Request() req: Express.Request,
     @Query() limit: number = 10,
     @Query() offset: number = 0
   ): Promise<HouseResponse[]> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
     const houses = await AppDataSource.getRepository(House).find({
       relations: ["user"],
       order: { createdAt: "DESC" },
@@ -178,7 +181,7 @@ export class HouseController extends Controller {
     }));
   }
 
-  @Security("jwt", ["optional"])
+  // @Security("jwt", ["optional"])
   @Get("search")
   public async searchHouses(
     @Request() req: Express.Request,
@@ -190,7 +193,8 @@ export class HouseController extends Controller {
     @Query() zipCode: string = "",
     @Res() badRequestResponse: TsoaResponse<400, { message: string }>
   ): Promise<HouseResponse[]> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
     if (!query.trim()) {
       return badRequestResponse(400, {
         message: "Search query cannot be empty",
@@ -265,7 +269,7 @@ export class HouseController extends Controller {
     }));
   }
 
-  @Security("jwt", ["optional"])
+  // @Security("jwt", ["optional"])
   @Get("{houseId}")
   public async getHouseById(
     @Path() houseId: number,
@@ -281,7 +285,8 @@ export class HouseController extends Controller {
       return notFoundResponse(404, { message: "Post not found" });
     }
 
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
     const likes =
       currentUser && currentUser.userId
         ? await AppDataSource.getRepository(Like).findOne({

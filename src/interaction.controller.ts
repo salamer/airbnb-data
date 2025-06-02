@@ -16,6 +16,7 @@ import {
 } from "tsoa";
 import { AppDataSource, Like, Order, House, User } from "./models";
 import type { JwtPayload } from "./utils";
+import { getCurrentUser } from "./auth.middleware";
 
 export interface OrderResponse {
   id: number;
@@ -44,7 +45,7 @@ export interface CreateOrderInput {
 @Route("houses/{houseId}")
 @Tags("Interactions (Likes & Orders)")
 export class InteractionController extends Controller {
-  @Security("jwt")
+  // @Security("jwt")
   @SuccessResponse(201, "Liked")
   @Post("like")
   public async likeHouse(
@@ -52,7 +53,8 @@ export class InteractionController extends Controller {
     @Path() houseId: number,
     @Res() notFoundResponse: TsoaResponse<404, { message: string }>
   ): Promise<{ message: string }> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
 
     const post = await AppDataSource.getRepository(House).findOneBy({
       id: houseId,
@@ -70,14 +72,15 @@ export class InteractionController extends Controller {
     return { message: "House liked successfully" };
   }
 
-  @Security("jwt")
+  // @Security("jwt")
   @SuccessResponse(200, "Unliked")
   @Delete("unlike")
   public async unlikeHouse(
     @Request() req: Express.Request,
     @Path() houseId: number
   ): Promise<{ message: string }> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
 
     await AppDataSource.getRepository(Like).delete({
       houseId,
@@ -87,7 +90,7 @@ export class InteractionController extends Controller {
     return { message: "Post unliked successfully" };
   }
 
-  @Security("jwt")
+  // @Security("jwt")
   @SuccessResponse(201, "Order Created")
   @Post("orders")
   public async createOrder(
@@ -96,7 +99,8 @@ export class InteractionController extends Controller {
     @Body() body: CreateOrderInput,
     @Res() notFoundResponse: TsoaResponse<404, { message: string }>
   ): Promise<OrderResponse> {
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
 
     const house = await AppDataSource.getRepository(House).findOneBy({
       id: houseId,

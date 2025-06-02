@@ -16,6 +16,7 @@ import { AppDataSource, User, Order, House, Like } from "./models";
 import type { JwtPayload } from "./utils";
 import { HouseResponse } from "./house.controller";
 import { In } from "typeorm";
+import { getCurrentUser } from "./auth.middleware";
 
 interface UserProfileResponse {
   id: number;
@@ -56,18 +57,17 @@ export class UserController extends Controller {
     };
   }
 
-  @Security("jwt", ["optional"])
+  // @Security("jwt", ["optional"])
   @Get("{userId}/orders")
   public async getUserOrders(
     @Path() userId: number,
     @Request() req: Express.Request,
-    @Res() notFound: TsoaResponse<404, { message: string }>
   ): Promise<UserOrdersResponse[]> {
     const user = await AppDataSource.getRepository(User).findOneBy({
       id: userId,
     });
     if (!user) {
-      return notFound(404, { message: "User not found" });
+      return [];
     }
 
     const orders = await AppDataSource.getRepository(Order).find({
@@ -75,7 +75,8 @@ export class UserController extends Controller {
       relations: ["house", "user"],
     });
 
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
     const likes =
       currentUser && currentUser.userId
         ? await AppDataSource.getRepository(Like).find({
@@ -122,18 +123,17 @@ export class UserController extends Controller {
       }));
   }
 
-  @Security("jwt", ["optional"])
+  // @Security("jwt", ["optional"])
   @Get("{userId}/likes")
   public async getUserLikes(
     @Request() req: Express.Request,
     @Path() userId: number,
-    @Res() notFound: TsoaResponse<404, { message: string }>
   ): Promise<HouseResponse[]> {
     const user = await AppDataSource.getRepository(User).findOneBy({
       id: userId,
     });
     if (!user) {
-      return notFound(404, { message: "User not found" });
+      return [];
     }
 
     const posts = await AppDataSource.getRepository(Like).find({
@@ -142,7 +142,8 @@ export class UserController extends Controller {
       order: { createdAt: "DESC" },
     });
 
-    const currentUser = req.user as JwtPayload;
+    // const currentUser = req.user as JwtPayload;
+    const currentUser = getCurrentUser();
     const likes =
       currentUser && currentUser.userId
         ? await AppDataSource.getRepository(Like).find({

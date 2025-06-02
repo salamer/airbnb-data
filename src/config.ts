@@ -16,6 +16,11 @@ const config = {
   OBJECT_STORAGE_CDN_URL_PREFIX:
     process.env.OBJECT_STORAGE_CDN_URL_PREFIX || '',
   OBJECT_STORAGE_ENDPOINT: process.env.OBJECT_STORAGE_ENDPOINT || '',
+  ADMIN_USER_ID: process.env.ADMIN_USER_ID ? parseInt(process.env.ADMIN_USER_ID, 10) : 1,
+  ADMIN_USERNAME: process.env.ADMIN_USERNAME || 'admin',
+  GUEST_USER_ID: process.env.GUEST_USER_ID ? parseInt(process.env.GUEST_USER_ID, 10) : 2,
+  GUEST_USERNAME: process.env.GUEST_USERNAME || 'guest',
+  USE_ADMIN_USER: process.env.USE_ADMIN_USER === 'true',
 };
 
 // Basic validation for essential configs
