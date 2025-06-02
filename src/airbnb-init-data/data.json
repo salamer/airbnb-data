@@ -1,0 +1,92 @@
+[
+  {
+    "caption": "Cozy Loft in Downtown",
+    "price": 120,
+    "address": "123 Main St",
+    "state": "California",
+    "city": "Los Angeles",
+    "zipCode": "90012",
+    "size": "Studio"
+  },
+  {
+    "caption": "Modern Apartment with City View",
+    "price": 200,
+    "address": "456 Market Ave",
+    "state": "New York",
+    "city": "New York",
+    "zipCode": "10001",
+    "size": "2 Bedroom"
+  },
+  {
+    "caption": "Charming Cottage by the Lake",
+    "price": 150,
+    "address": "789 Lake Rd",
+    "state": "Michigan",
+    "city": "Ann Arbor",
+    "zipCode": "48104",
+    "size": "1 Bedroom"
+  },
+  {
+    "caption": "Spacious Family Home",
+    "price": 250,
+    "address": "321 Oak Lane",
+    "state": "Texas",
+    "city": "Austin",
+    "zipCode": "73301",
+    "size": "3 Bedroom"
+  },
+  {
+    "caption": "Sunny Beachfront Condo",
+    "price": 180,
+    "address": "654 Ocean Dr",
+    "state": "Florida",
+    "city": "Miami",
+    "zipCode": "33139",
+    "size": "2 Bedroom"
+  },
+  {
+    "caption": "Luxury Penthouse Suite",
+    "price": 350,
+    "address": "987 Skyline Blvd",
+    "state": "Illinois",
+    "city": "Chicago",
+    "zipCode": "60605",
+    "size": "3 Bedroom"
+  },
+  {
+    "caption": "Historic Downtown Studio",
+    "price": 110,
+    "address": "159 Maple St",
+    "state": "Massachusetts",
+    "city": "Boston",
+    "zipCode": "02108",
+    "size": "Studio"
+  },
+  {
+    "caption": "Quiet Suburban Retreat",
+    "price": 140,
+    "address": "246 Willow Ct",
+    "state": "Washington",
+    "city": "Seattle",
+    "zipCode": "98101",
+    "size": "1 Bedroom"
+  },
+  {
+    "caption": "Mountain Cabin Escape",
+    "price": 160,
+    "address": "333 Pine Hill Rd",
+    "state": "Colorado",
+    "city": "Denver",
+    "zipCode": "80202",
+    "size": "2 Bedroom"
+  },
+  {
+    "caption": "Stylish Urban Flat",
+    "price": 175,
+    "address": "852 Elm St",
+    "state": "Oregon",
+    "city": "Portland",
+    "zipCode": "97205",
+    "size": "1 Bedroom"
+  }
+]

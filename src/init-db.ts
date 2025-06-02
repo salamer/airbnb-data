@@ -3,6 +3,10 @@
 import config from "./config";
 import { AppDataSource, schema, House, User } from "./models";
 import { hashPassword } from "./utils";
+import initdata from "./airbnb-init-data/data.json";
+import fs from "fs";
+import { uploadBase64ToObjectStorage } from "./objectstorage.service";
+import path from "path";
 
 export async function initializeDatabase() {
   console.log("Initializing database...");
@@ -41,6 +45,32 @@ export async function initializeDatabase() {
     id: config.GUEST_USER_ID, // Set a fixed ID for the guest user
   });
   await repo.save(guestUser);
+
+  // init data
+  for (var i = 0; i < initdata.length; i++) {
+    const houseData = initdata[i];
+    const image = fs.readFileSync(
+      path.join(__dirname, "airbnb-init-data", `${i}.jpg`)
+    );
+    const imageBase64 = image.toString("base64");
+    const uploadResult = await uploadBase64ToObjectStorage(
+      imageBase64,
+      "image/jpeg"
+    );
+    const house = AppDataSource.getRepository(House).create({
+      userId: config.ADMIN_USER_ID, // Use the admin user for initial data
+      imageUrl: uploadResult.objectUrl,
+      caption: houseData.caption || null,
+      price: houseData.price,
+      address: houseData.address,
+      state: houseData.state,
+      city: houseData.city,
+      zipCode: houseData.zipCode,
+      size: houseData.size,
+    });
+    await AppDataSource.getRepository(House).save(house);
+    console.log(`House ${i + 1} initialized: ${houseData.caption}`);
+  }
 }
 // This function will be called when the script is run
 initializeDatabase()
